@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Sessions - ClarityBoard</title>
+    <link rel="stylesheet" href="Style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container Dashboard">
+        <h1>Past Sessions</h1>
+        <a href="teacher-dashboard.html" class="link-button">← Back to Dashboard</a>
+
+        <div id="sessionsList"></div>
+
+        <!-- Reused dashboard view for whichever session is clicked -->
+        <div id="pastSessionDetail" class="hidden">
+            <h2 id="pastSessionTitle"></h2>
+
+            <h2>🔥 Confusion Heatmap</h2>
+            <div id="heatmap"></div>
+
+            <h2>📈 Lecture Rating Trend</h2>
+            <canvas id="ratingChart"></canvas>
+
+            <h2>❓ Doubts</h2>
+            <div id="doubtsList"></div>
+
+            <h2>💡 Suggestions</h2>
+            <div id="suggestionsList"></div>
+        </div>
+    </div>
+    <script src="Script.js"></script>
+</body>
+</html>

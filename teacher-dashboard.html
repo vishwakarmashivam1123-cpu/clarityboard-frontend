@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard -ClarityBoard</title>
+    <link rel="stylesheet" href="Style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container Dashboard">
+        
+        <h1>Dashboard</h1>
+
+        <!-- Create New Session -->
+        <div id="createSessionBox">
+            <h2>Create New Session</h2>
+            <input type="text" id="sessionSubject" placeholder="Subject (e.g. Data Structures)">
+            <input type="text" id="sessionTopics" placeholder="Topics, comma separated (e.g. Recursion, Linked Lists)">
+            <button id="createSessionBtn">Start Session</button>
+            <p id="createSessionError" class="error"></p>
+        </div>
+
+        <div id="dashboardContent" class="hidden">
+            <button id="newSessionBtn" style="width:auto; background:#e63946; font-size:12px; padding:6px 12px;">End Session & Start New</button>
+            <a href="past-sessions.html" class="link-button">View Past Sessions</a>
+
+            <p id="sessionInfo">Class Code: <span id="displayCode"></span></p>
+
+            <h2>🔥 Confusion Heatmap</h2>
+            <div id="heatmap"></div>
+
+            <h2>📈 Lecture Rating Trend</h2>
+            <canvas id="ratingChart"></canvas>
+
+            <h2>❓ Doubts</h2>
+            <div id="doubtsList"></div>
+
+            <h2>💡 Suggestions</h2>
+            <div id="suggestionsList"></div>
+        </div>
+
+    </div>
+    <script src="Script.js"></script>
+    
+</body>
+</html>
