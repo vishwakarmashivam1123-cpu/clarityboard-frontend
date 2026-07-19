@@ -323,14 +323,40 @@ if (createSessionBtn) {
     window.location.href = 'teacher-login.html';
   }
 
-  const existingClassCode = localStorage.getItem('currentClassCode');
-  const existingLectureId = localStorage.getItem('currentLectureId');
+  let myClassCode = null;
 
-  if (existingClassCode && existingLectureId) {
-    document.getElementById('displayCode').textContent = existingClassCode;
-    document.getElementById('createSessionBox').classList.add('hidden');
-    dashboardContent.classList.remove('hidden');
-    loadDashboardData(existingLectureId);
+  initDashboard();
+
+  async function initDashboard() {
+    try {
+      const response = await fetch(`${API_URL}/api/classes/get-or-create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacherName: teacherData.name,
+          teacherEmail: teacherData.email
+        })
+      });
+
+      const classData = await response.json();
+
+      if (!response.ok) {
+        console.error(classData.error);
+        return;
+      }
+
+      myClassCode = classData.classCode;
+      document.getElementById('displayCode').textContent = myClassCode;
+
+      const existingLectureId = localStorage.getItem('currentLectureId');
+      if (existingLectureId) {
+        dashboardContent.classList.remove('hidden');
+        loadDashboardData(existingLectureId);
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   createSessionBtn.addEventListener('click', async function() {
@@ -348,29 +374,12 @@ if (createSessionBtn) {
     setButtonLoading(createSessionBtn, true);
 
     try {
-      const classResponse = await fetch(`${API_URL}/api/classes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subject: subject,
-          teacherName: teacherData.name,
-          teacherEmail: teacherData.email
-        })
-      });
-
-      const classData = await classResponse.json();
-
-      if (!classResponse.ok) {
-        setButtonLoading(createSessionBtn, false);
-        errorBox.textContent = classData.error;
-        return;
-      }
-
       const lectureResponse = await fetch(`${API_URL}/api/lectures`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          classCode: classData.classCode,
+          classCode: myClassCode,
+          subject: subject,
           topics: topics
         })
       });
@@ -383,11 +392,11 @@ if (createSessionBtn) {
         return;
       }
 
-      localStorage.setItem('currentClassCode', classData.classCode);
       localStorage.setItem('currentLectureId', lectureData._id);
 
-      document.getElementById('displayCode').textContent = classData.classCode;
-      document.getElementById('createSessionBox').classList.add('hidden');
+      document.getElementById('sessionSubject').value = '';
+      document.getElementById('sessionTopics').value = '';
+      setButtonLoading(createSessionBtn, false);
       dashboardContent.classList.remove('hidden');
 
       loadDashboardData(lectureData._id);
@@ -402,9 +411,8 @@ if (createSessionBtn) {
   const newSessionBtn = document.getElementById('newSessionBtn');
   if (newSessionBtn) {
     newSessionBtn.addEventListener('click', function() {
-      localStorage.removeItem('currentClassCode');
       localStorage.removeItem('currentLectureId');
-      location.reload();
+      dashboardContent.classList.add('hidden');
     });
   }
 
