@@ -8,15 +8,50 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-profile">
+    <div class="drawer-avatar" id="drawerAvatar">?</div>
+    <div>
+      <div class="drawer-profile-name" id="drawerName">—</div>
+      <div class="drawer-profile-email" id="drawerEmail">—</div>
+    </div>
+  </div>
+  <a href="teacher-dashboard.html" class="drawer-link">🏠 Dashboard</a>
+  <a href="past-sessions.html" class="drawer-link">🕘 Past Sessions</a>
+  <button class="drawer-link logout" id="drawerLogout">🚪 Logout</button>
+</div>
     <div class="container Dashboard">
-        <h1>Past Sessions</h1>
+        <div class="page-banner">
+  <button class="menu-btn" id="menuBtn">☰</button>
+  <span class="page-banner-title">Past Sessions</span>
+  <span class="page-banner-icon">🕘</span>
+</div>
         <a href="teacher-dashboard.html" class="link-button">← Back to Dashboard</a>
 
-        <div id="sessionsList"></div>
+        <div class="calendar-card">
+  <div class="calendar-header">
+    <button class="cal-nav-btn" id="calPrevBtn">‹</button>
+    <span class="calendar-title" id="calMonthLabel"></span>
+    <button class="cal-nav-btn" id="calNextBtn">›</button>
+  </div>
+  <div class="calendar-weekdays">
+    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+  </div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
+<h2 id="sessionsListTitle">All Sessions</h2>
+<div id="sessionsList"></div>
 
         <!-- Reused dashboard view for whichever session is clicked -->
         <div id="pastSessionDetail" class="hidden">
             <h2 id="pastSessionTitle"></h2>
+            <h2>🎯 Overall Clarity Breakdown</h2>
+<div class="donut-wrap">
+  <canvas id="clarityDonut"></canvas>
+  <div class="donut-legend" id="donutLegend"></div>
+</div>
 
             <h2>🔥 Confusion Heatmap</h2>
             <div id="heatmap"></div>

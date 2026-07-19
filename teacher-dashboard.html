@@ -8,9 +8,26 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-profile">
+    <div class="drawer-avatar" id="drawerAvatar">?</div>
+    <div>
+      <div class="drawer-profile-name" id="drawerName">—</div>
+      <div class="drawer-profile-email" id="drawerEmail">—</div>
+    </div>
+  </div>
+  <a href="teacher-dashboard.html" class="drawer-link">🏠 Dashboard</a>
+  <a href="past-sessions.html" class="drawer-link">🕘 Past Sessions</a>
+  <button class="drawer-link logout" id="drawerLogout">🚪 Logout</button>
+</div>
     <div class="container Dashboard">
         
-        <h1>Dashboard</h1>
+        <div class="page-banner">
+  <button class="menu-btn" id="menuBtn">☰</button>
+  <span class="page-banner-title">Dashboard</span>
+  <span class="page-banner-icon">📊</span>
+</div>
 
         <!-- Create New Session -->
         <div id="createSessionBox">
@@ -27,8 +44,31 @@
 
             <p id="sessionInfo">Class Code: <span id="displayCode"></span></p>
 
+            <div class="stat-cards">
+              <div class="stat-card">
+                <div class="stat-icon stat-icon-blue">📝</div>
+                <div class="stat-value" id="statResponses">0</div>
+                <div class="stat-label">Responses</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon stat-icon-amber">⭐</div>
+                <div class="stat-value" id="statAvgRating">0</div>
+                <div class="stat-label">Avg Rating</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon stat-icon-coral">❓</div>
+                <div class="stat-value" id="statOpenDoubts">0</div>
+                <div class="stat-label">Open Doubts</div>
+              </div>
+            </div>
+
             <h2>🔥 Confusion Heatmap</h2>
             <div id="heatmap"></div>
+            <h2>🎯 Overall Clarity Breakdown</h2>
+<div class="donut-wrap">
+  <canvas id="clarityDonut"></canvas>
+  <div class="donut-legend" id="donutLegend"></div>
+</div>
 
             <h2>📈 Lecture Rating Trend</h2>
             <canvas id="ratingChart"></canvas>

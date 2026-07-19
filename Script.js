@@ -3,6 +3,42 @@ const API_URL = "https://clarityboard-backend.onrender.com";
 const studentButton = document.getElementById('student-button');
 const teacherButton = document.getElementById('teacher-button');
 
+// ---------- SIDE DRAWER ----------
+const drawer = document.getElementById('drawer');
+const drawerOverlay = document.getElementById('drawerOverlay');
+const menuBtn = document.getElementById('menuBtn');
+
+if (drawer && menuBtn) {
+  const teacherData = JSON.parse(localStorage.getItem('teacher'));
+
+  if (teacherData) {
+    document.getElementById('drawerName').textContent = teacherData.name;
+    document.getElementById('drawerEmail').textContent = teacherData.email;
+    const initials = teacherData.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    document.getElementById('drawerAvatar').textContent = initials;
+  }
+
+  menuBtn.addEventListener('click', function() {
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('open');
+  });
+
+  drawerOverlay.addEventListener('click', function() {
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('open');
+  });
+
+  const drawerLogout = document.getElementById('drawerLogout');
+  if (drawerLogout) {
+    drawerLogout.addEventListener('click', function() {
+      localStorage.removeItem('teacher');
+      localStorage.removeItem('currentClassCode');
+      localStorage.removeItem('currentLectureId');
+      window.location.href = 'teacher-login.html';
+    });
+  }
+}
+
 if (teacherButton) {
     teacherButton.addEventListener('click', () => {
         window.location.href = 'teacher-login.html';
@@ -349,7 +385,9 @@ if (createSessionBtn) {
         return;
       }
 
+      renderStats(feedbackList);
       renderHeatmap(feedbackList);
+      renderDonut(feedbackList);
       renderDoubts(feedbackList);
       renderSuggestions(feedbackList);
       renderChart(feedbackList);
@@ -357,6 +395,23 @@ if (createSessionBtn) {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  function renderStats(feedbackList) {
+    const statResponses = document.getElementById('statResponses');
+    if (!statResponses) return;
+
+    const totalResponses = feedbackList.length;
+
+    const avgRating = totalResponses === 0
+      ? 0
+      : (feedbackList.reduce((sum, fb) => sum + fb.lectureRating, 0) / totalResponses).toFixed(1);
+
+    const openDoubts = feedbackList.filter(fb => fb.doubt && fb.doubt.trim() !== '' && !fb.resolved).length;
+
+    statResponses.textContent = totalResponses;
+    document.getElementById('statAvgRating').textContent = avgRating;
+    document.getElementById('statOpenDoubts').textContent = openDoubts;
   }
 
   function renderHeatmap(feedbackList) {
@@ -398,6 +453,52 @@ if (createSessionBtn) {
       div.innerHTML = `<span>${topic}</span><span>${Math.round(confusedPercent)}% confused</span>`;
       heatmapDiv.appendChild(div);
     }
+  }
+
+  function renderDonut(feedbackList) {
+    const canvas = document.getElementById('clarityDonut');
+    if (!canvas) return;
+
+    let confused = 0, partial = 0, clear = 0;
+
+    feedbackList.forEach(function(fb) {
+      for (const topic in fb.topicRatings) {
+        const rating = fb.topicRatings[topic];
+        if (rating === "Confused") confused++;
+        else if (rating === "Partial") partial++;
+        else if (rating === "Clear") clear++;
+      }
+    });
+
+    const total = confused + partial + clear;
+    const legend = document.getElementById('donutLegend');
+
+    if (total === 0) {
+      legend.innerHTML = '<p style="margin:0;">No ratings yet.</p>';
+      return;
+    }
+
+    legend.innerHTML = `
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#FF6B5B;"></span>Confused — ${confused} (${Math.round(confused / total * 100)}%)</div>
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#F5A623;"></span>Partial — ${partial} (${Math.round(partial / total * 100)}%)</div>
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#2F6FED;"></span>Clear — ${clear} (${Math.round(clear / total * 100)}%)</div>
+    `;
+
+    new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Confused', 'Partial', 'Clear'],
+        datasets: [{
+          data: [confused, partial, clear],
+          backgroundColor: ['#FF6B5B', '#F5A623', '#2F6FED'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '68%',
+        plugins: { legend: { display: false } }
+      }
+    });
   }
 
   function renderDoubts(feedbackList) {
@@ -496,53 +597,130 @@ if (sessionsListDiv) {
     window.location.href = 'teacher-login.html';
   }
 
-  loadPastSessions();
+  let allClasses = [];
+let calendarDate = new Date();
+let selectedDay = null;
 
-  async function loadPastSessions() {
-    try {
-      const response = await fetch(`${API_URL}/api/classes/teacher/${teacherData.email}`);
-      const classes = await response.json();
+loadPastSessions();
 
-      if (!response.ok) {
-        sessionsListDiv.innerHTML = '<p>Could not load sessions.</p>';
-        return;
-      }
+async function loadPastSessions() {
+  try {
+    const response = await fetch(`${API_URL}/api/classes/teacher/${teacherData.email}`);
+    const classes = await response.json();
 
-      if (classes.length === 0) {
-        sessionsListDiv.innerHTML = '<p>No past sessions yet.</p>';
-        return;
-      }
-
-      sessionsListDiv.innerHTML = '';
-
-      classes.forEach(function(cls) {
-        const div = document.createElement('div');
-        div.classList.add('doubt-item');
-
-        const dateStr = new Date(cls.createdAt).toLocaleDateString();
-
-        div.innerHTML = `
-          <p><strong>${cls.subject}</strong> — Code: ${cls.classCode}</p>
-          <p style="font-size:12px; color:#888;">${dateStr}</p>
-          <button class="view-session-btn" data-code="${cls.classCode}" data-subject="${cls.subject}">View</button>
-        `;
-
-        sessionsListDiv.appendChild(div);
-      });
-
-      document.querySelectorAll('.view-session-btn').forEach(function(btn) {
-        btn.addEventListener('click', async function() {
-          const classCode = btn.getAttribute('data-code');
-          const subject = btn.getAttribute('data-subject');
-          await openSessionDetail(classCode, subject);
-        });
-      });
-
-    } catch (err) {
-      console.error(err);
-      sessionsListDiv.innerHTML = '<p>Could not connect to server.</p>';
+    if (!response.ok) {
+      sessionsListDiv.innerHTML = '<p>Could not load sessions.</p>';
+      return;
     }
+
+    allClasses = classes;
+    renderCalendar();
+    renderSessionsList(allClasses);
+
+  } catch (err) {
+    console.error(err);
+    sessionsListDiv.innerHTML = '<p>Could not connect to server.</p>';
   }
+}
+
+function renderSessionsList(classes) {
+  const titleEl = document.getElementById('sessionsListTitle');
+
+  if (classes.length === 0) {
+    sessionsListDiv.innerHTML = '<p>No sessions on this day.</p>';
+    return;
+  }
+
+  sessionsListDiv.innerHTML = '';
+
+  classes.forEach(function(cls) {
+    const div = document.createElement('div');
+    div.classList.add('doubt-item');
+
+    const dateStr = new Date(cls.createdAt).toLocaleDateString();
+
+    div.innerHTML = `
+      <p><strong>${cls.subject}</strong> — Code: ${cls.classCode}</p>
+      <p style="font-size:12px; color:#888;">${dateStr}</p>
+      <button class="view-session-btn" data-code="${cls.classCode}" data-subject="${cls.subject}">View</button>
+    `;
+
+    sessionsListDiv.appendChild(div);
+  });
+
+  document.querySelectorAll('.view-session-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      const classCode = btn.getAttribute('data-code');
+      const subject = btn.getAttribute('data-subject');
+      await openSessionDetail(classCode, subject);
+    });
+  });
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const label = document.getElementById('calMonthLabel');
+  grid.innerHTML = '';
+
+  const year = calendarDate.getFullYear();
+  const month = calendarDate.getMonth();
+
+  label.textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Map each day-of-month that has a session to its list of classes
+  const sessionsByDay = {};
+  allClasses.forEach(function(cls) {
+    const d = new Date(cls.createdAt);
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      const day = d.getDate();
+      if (!sessionsByDay[day]) sessionsByDay[day] = [];
+      sessionsByDay[day].push(cls);
+    }
+  });
+
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    const empty = document.createElement('div');
+    empty.classList.add('cal-day', 'empty');
+    grid.appendChild(empty);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cal-day');
+    cell.textContent = day;
+
+    if (sessionsByDay[day]) {
+      cell.classList.add('has-session');
+      const dot = document.createElement('div');
+      dot.classList.add('cal-dot');
+      cell.appendChild(dot);
+
+      cell.addEventListener('click', function() {
+        document.querySelectorAll('.cal-day').forEach(c => c.classList.remove('selected'));
+        cell.classList.add('selected');
+        document.getElementById('sessionsListTitle').textContent =
+          `Sessions on ${calendarDate.toLocaleDateString('en-US', { month: 'short' })} ${day}`;
+        renderSessionsList(sessionsByDay[day]);
+      });
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+document.getElementById('calPrevBtn').addEventListener('click', function() {
+  calendarDate.setMonth(calendarDate.getMonth() - 1);
+  renderCalendar();
+});
+
+document.getElementById('calNextBtn').addEventListener('click', function() {
+  calendarDate.setMonth(calendarDate.getMonth() + 1);
+  document.getElementById('sessionsListTitle').textContent = 'All Sessions';
+  renderSessionsList(allClasses);
+});
 
   async function openSessionDetail(classCode, subject) {
     try {
@@ -563,6 +741,7 @@ if (sessionsListDiv) {
       const feedbackList = await fbResponse.json();
 
       renderHeatmap(feedbackList);
+      renderDonut(feedbackList);
       renderDoubts(feedbackList);
       renderSuggestions(feedbackList);
       renderChart(feedbackList);
@@ -608,6 +787,52 @@ if (sessionsListDiv) {
       div.innerHTML = `<span>${topic}</span><span>${Math.round(confusedPercent)}% confused</span>`;
       heatmapDiv.appendChild(div);
     }
+  }
+
+  function renderDonut(feedbackList) {
+    const canvas = document.getElementById('clarityDonut');
+    if (!canvas) return;
+
+    let confused = 0, partial = 0, clear = 0;
+
+    feedbackList.forEach(function(fb) {
+      for (const topic in fb.topicRatings) {
+        const rating = fb.topicRatings[topic];
+        if (rating === "Confused") confused++;
+        else if (rating === "Partial") partial++;
+        else if (rating === "Clear") clear++;
+      }
+    });
+
+    const total = confused + partial + clear;
+    const legend = document.getElementById('donutLegend');
+
+    if (total === 0) {
+      legend.innerHTML = '<p style="margin:0;">No ratings yet.</p>';
+      return;
+    }
+
+    legend.innerHTML = `
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#FF6B5B;"></span>Confused — ${confused} (${Math.round(confused / total * 100)}%)</div>
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#F5A623;"></span>Partial — ${partial} (${Math.round(partial / total * 100)}%)</div>
+      <div class="donut-legend-item"><span class="donut-dot" style="background:#2F6FED;"></span>Clear — ${clear} (${Math.round(clear / total * 100)}%)</div>
+    `;
+
+    new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['Confused', 'Partial', 'Clear'],
+        datasets: [{
+          data: [confused, partial, clear],
+          backgroundColor: ['#FF6B5B', '#F5A623', '#2F6FED'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '68%',
+        plugins: { legend: { display: false } }
+      }
+    });
   }
 
   function renderDoubts(feedbackList) {
