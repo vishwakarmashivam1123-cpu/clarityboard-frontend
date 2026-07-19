@@ -8,6 +8,16 @@ const drawer = document.getElementById('drawer');
 const drawerOverlay = document.getElementById('drawerOverlay');
 const menuBtn = document.getElementById('menuBtn');
 
+function setButtonLoading(button, isLoading) {
+  if (!button) return;
+  if (isLoading) {
+    button.dataset.originalText = button.textContent;
+    button.classList.add('btn-loading');
+  } else {
+    button.classList.remove('btn-loading');
+  }
+}
+
 if (drawer && menuBtn) {
   const teacherData = JSON.parse(localStorage.getItem('teacher'));
 
@@ -71,6 +81,8 @@ if (registerButton) {
       return;
     }
 
+    setButtonLoading(registerButton, true);
+
     try {
       const response = await fetch(`${API_URL}/api/teachers/register`, {
         method: 'POST',
@@ -81,6 +93,7 @@ if (registerButton) {
       const data = await response.json();
 
       if (!response.ok) {
+        setButtonLoading(registerButton, false);
         errorMessage.textContent = data.error;
         return;
       }
@@ -89,6 +102,7 @@ if (registerButton) {
       window.location.href = 'teacher-login.html';
 
     } catch (err) {
+      setButtonLoading(registerButton, false);
       console.error(err);
       errorMessage.textContent = 'Could not connect to server. Is it running?';
     }
@@ -109,6 +123,8 @@ if (loginButton) {
       return;
     }
 
+    setButtonLoading(loginButton, true);
+
     try {
       const response = await fetch(`${API_URL}/api/teachers/login`, {
         method: 'POST',
@@ -119,6 +135,7 @@ if (loginButton) {
       const data = await response.json();
 
       if (!response.ok) {
+        setButtonLoading(loginButton, false);
         errorMessage.textContent = data.error;
         return;
       }
@@ -127,6 +144,7 @@ if (loginButton) {
       window.location.href = 'teacher-dashboard.html';
 
     } catch (err) {
+      setButtonLoading(loginButton, false);
       console.error(err);
       errorMessage.textContent = 'Could not connect to server. Is it running?';
     }
@@ -154,12 +172,14 @@ if (joinButton) {
         }
 
         codeError.textContent = '';
+        setButtonLoading(joinButton, true);
 
         try {
             const classResponse = await fetch(`${API_URL}/api/classes/${subjectcode}`);
             const classData = await classResponse.json();
 
             if (!classResponse.ok) {
+                setButtonLoading(joinButton, false);
                 codeError.textContent = classData.error;
                 return;
             }
@@ -168,6 +188,7 @@ if (joinButton) {
             const lectureData = await lectureResponse.json();
 
             if (!lectureResponse.ok) {
+                setButtonLoading(joinButton, false);
                 codeError.textContent = lectureData.error;
                 return;
             }
@@ -175,6 +196,7 @@ if (joinButton) {
             currentLectureId = lectureData._id;
             currentClassCode = subjectcode;
 
+            setButtonLoading(joinButton, false);
             codestage.classList.add('hidden');
             feedbackstage.classList.remove('hidden');
 
@@ -182,6 +204,7 @@ if (joinButton) {
             renderStars();
 
         } catch (err) {
+            setButtonLoading(joinButton, false);
             console.error(err);
             codeError.textContent = 'Could not connect to server. Is it running?';
         }
@@ -242,7 +265,8 @@ if (joinButton) {
         }
     }
 
-    document.getElementById('submitfeedback').addEventListener("click", async function(){
+    const submitFeedbackBtn = document.getElementById('submitfeedback');
+    submitFeedbackBtn.addEventListener("click", async function(){
         const submitError = document.getElementById('submit-error');
 
         if (selectedRating === 0) {
@@ -259,6 +283,8 @@ if (joinButton) {
             suggestion: document.getElementById("suggestions").value
         };
 
+        setButtonLoading(submitFeedbackBtn, true);
+
         try {
             const response = await fetch(`${API_URL}/api/feedback`, {
                 method: 'POST',
@@ -269,6 +295,7 @@ if (joinButton) {
             const data = await response.json();
 
             if (!response.ok) {
+                setButtonLoading(submitFeedbackBtn, false);
                 if (submitError) submitError.textContent = data.error;
                 else alert(data.error);
                 return;
@@ -278,6 +305,7 @@ if (joinButton) {
             thankYouStage.classList.remove("hidden");
 
         } catch (err) {
+            setButtonLoading(submitFeedbackBtn, false);
             console.error(err);
             if (submitError) submitError.textContent = 'Could not connect to server. Is it running?';
         }
@@ -317,6 +345,8 @@ if (createSessionBtn) {
 
     const topics = topicsRaw.split(',').map(function(t) { return t.trim(); }).filter(function(t) { return t !== ''; });
 
+    setButtonLoading(createSessionBtn, true);
+
     try {
       const classResponse = await fetch(`${API_URL}/api/classes`, {
         method: 'POST',
@@ -331,6 +361,7 @@ if (createSessionBtn) {
       const classData = await classResponse.json();
 
       if (!classResponse.ok) {
+        setButtonLoading(createSessionBtn, false);
         errorBox.textContent = classData.error;
         return;
       }
@@ -347,6 +378,7 @@ if (createSessionBtn) {
       const lectureData = await lectureResponse.json();
 
       if (!lectureResponse.ok) {
+        setButtonLoading(createSessionBtn, false);
         errorBox.textContent = lectureData.error;
         return;
       }
@@ -361,6 +393,7 @@ if (createSessionBtn) {
       loadDashboardData(lectureData._id);
 
     } catch (err) {
+      setButtonLoading(createSessionBtn, false);
       console.error(err);
       errorBox.textContent = 'Could not connect to server. Is it running?';
     }
@@ -376,6 +409,8 @@ if (createSessionBtn) {
   }
 
   async function loadDashboardData(lectureId) {
+    showDashboardSkeletons();
+
     try {
       const response = await fetch(`${API_URL}/api/feedback/${lectureId}`);
       const feedbackList = await response.json();
@@ -394,6 +429,38 @@ if (createSessionBtn) {
 
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  function showDashboardSkeletons() {
+    const heatmapDiv = document.getElementById('heatmap');
+    if (heatmapDiv) {
+      heatmapDiv.innerHTML = `
+        <div class="skeleton skeleton-block"></div>
+        <div class="skeleton skeleton-block"></div>
+        <div class="skeleton skeleton-block"></div>
+      `;
+    }
+
+    const legend = document.getElementById('donutLegend');
+    const canvas = document.getElementById('clarityDonut');
+    if (legend && canvas) {
+      canvas.style.visibility = 'hidden';
+      legend.innerHTML = `
+        <div class="skeleton skeleton-line short"></div>
+        <div class="skeleton skeleton-line medium"></div>
+        <div class="skeleton skeleton-line short"></div>
+      `;
+    }
+
+    const doubtsList = document.getElementById('doubtsList');
+    if (doubtsList) {
+      doubtsList.innerHTML = `<div class="skeleton skeleton-block"></div><div class="skeleton skeleton-block"></div>`;
+    }
+
+    const suggestionsList = document.getElementById('suggestionsList');
+    if (suggestionsList) {
+      suggestionsList.innerHTML = `<div class="skeleton skeleton-block"></div>`;
     }
   }
 
@@ -458,6 +525,8 @@ if (createSessionBtn) {
   function renderDonut(feedbackList) {
     const canvas = document.getElementById('clarityDonut');
     if (!canvas) return;
+
+    canvas.style.visibility = 'visible';
 
     let confused = 0, partial = 0, clear = 0;
 
@@ -598,129 +667,128 @@ if (sessionsListDiv) {
   }
 
   let allClasses = [];
-let calendarDate = new Date();
-let selectedDay = null;
+  let calendarDate = new Date();
+  let selectedDay = null;
 
-loadPastSessions();
+  loadPastSessions();
 
-async function loadPastSessions() {
-  try {
-    const response = await fetch(`${API_URL}/api/classes/teacher/${teacherData.email}`);
-    const classes = await response.json();
+  async function loadPastSessions() {
+    try {
+      const response = await fetch(`${API_URL}/api/classes/teacher/${teacherData.email}`);
+      const classes = await response.json();
 
-    if (!response.ok) {
-      sessionsListDiv.innerHTML = '<p>Could not load sessions.</p>';
+      if (!response.ok) {
+        sessionsListDiv.innerHTML = '<p>Could not load sessions.</p>';
+        return;
+      }
+
+      allClasses = classes;
+      renderCalendar();
+      renderSessionsList(allClasses);
+
+    } catch (err) {
+      console.error(err);
+      sessionsListDiv.innerHTML = '<p>Could not connect to server.</p>';
+    }
+  }
+
+  function renderSessionsList(classes) {
+    const titleEl = document.getElementById('sessionsListTitle');
+
+    if (classes.length === 0) {
+      sessionsListDiv.innerHTML = '<p>No sessions on this day.</p>';
       return;
     }
 
-    allClasses = classes;
-    renderCalendar();
-    renderSessionsList(allClasses);
+    sessionsListDiv.innerHTML = '';
 
-  } catch (err) {
-    console.error(err);
-    sessionsListDiv.innerHTML = '<p>Could not connect to server.</p>';
-  }
-}
+    classes.forEach(function(cls) {
+      const div = document.createElement('div');
+      div.classList.add('doubt-item');
 
-function renderSessionsList(classes) {
-  const titleEl = document.getElementById('sessionsListTitle');
+      const dateStr = new Date(cls.createdAt).toLocaleDateString();
 
-  if (classes.length === 0) {
-    sessionsListDiv.innerHTML = '<p>No sessions on this day.</p>';
-    return;
-  }
+      div.innerHTML = `
+        <p><strong>${cls.subject}</strong> — Code: ${cls.classCode}</p>
+        <p style="font-size:12px; color:#888;">${dateStr}</p>
+        <button class="view-session-btn" data-code="${cls.classCode}" data-subject="${cls.subject}">View</button>
+      `;
 
-  sessionsListDiv.innerHTML = '';
-
-  classes.forEach(function(cls) {
-    const div = document.createElement('div');
-    div.classList.add('doubt-item');
-
-    const dateStr = new Date(cls.createdAt).toLocaleDateString();
-
-    div.innerHTML = `
-      <p><strong>${cls.subject}</strong> — Code: ${cls.classCode}</p>
-      <p style="font-size:12px; color:#888;">${dateStr}</p>
-      <button class="view-session-btn" data-code="${cls.classCode}" data-subject="${cls.subject}">View</button>
-    `;
-
-    sessionsListDiv.appendChild(div);
-  });
-
-  document.querySelectorAll('.view-session-btn').forEach(function(btn) {
-    btn.addEventListener('click', async function() {
-      const classCode = btn.getAttribute('data-code');
-      const subject = btn.getAttribute('data-subject');
-      await openSessionDetail(classCode, subject);
+      sessionsListDiv.appendChild(div);
     });
-  });
-}
 
-function renderCalendar() {
-  const grid = document.getElementById('calendarGrid');
-  const label = document.getElementById('calMonthLabel');
-  grid.innerHTML = '';
-
-  const year = calendarDate.getFullYear();
-  const month = calendarDate.getMonth();
-
-  label.textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Map each day-of-month that has a session to its list of classes
-  const sessionsByDay = {};
-  allClasses.forEach(function(cls) {
-    const d = new Date(cls.createdAt);
-    if (d.getFullYear() === year && d.getMonth() === month) {
-      const day = d.getDate();
-      if (!sessionsByDay[day]) sessionsByDay[day] = [];
-      sessionsByDay[day].push(cls);
-    }
-  });
-
-  for (let i = 0; i < firstDayOfWeek; i++) {
-    const empty = document.createElement('div');
-    empty.classList.add('cal-day', 'empty');
-    grid.appendChild(empty);
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cal-day');
-    cell.textContent = day;
-
-    if (sessionsByDay[day]) {
-      cell.classList.add('has-session');
-      const dot = document.createElement('div');
-      dot.classList.add('cal-dot');
-      cell.appendChild(dot);
-
-      cell.addEventListener('click', function() {
-        document.querySelectorAll('.cal-day').forEach(c => c.classList.remove('selected'));
-        cell.classList.add('selected');
-        document.getElementById('sessionsListTitle').textContent =
-          `Sessions on ${calendarDate.toLocaleDateString('en-US', { month: 'short' })} ${day}`;
-        renderSessionsList(sessionsByDay[day]);
+    document.querySelectorAll('.view-session-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        const classCode = btn.getAttribute('data-code');
+        const subject = btn.getAttribute('data-subject');
+        await openSessionDetail(classCode, subject);
       });
+    });
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    const label = document.getElementById('calMonthLabel');
+    grid.innerHTML = '';
+
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+
+    label.textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const firstDayOfWeek = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const sessionsByDay = {};
+    allClasses.forEach(function(cls) {
+      const d = new Date(cls.createdAt);
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        const day = d.getDate();
+        if (!sessionsByDay[day]) sessionsByDay[day] = [];
+        sessionsByDay[day].push(cls);
+      }
+    });
+
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      const empty = document.createElement('div');
+      empty.classList.add('cal-day', 'empty');
+      grid.appendChild(empty);
     }
 
-    grid.appendChild(cell);
+    for (let day = 1; day <= daysInMonth; day++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cal-day');
+      cell.textContent = day;
+
+      if (sessionsByDay[day]) {
+        cell.classList.add('has-session');
+        const dot = document.createElement('div');
+        dot.classList.add('cal-dot');
+        cell.appendChild(dot);
+
+        cell.addEventListener('click', function() {
+          document.querySelectorAll('.cal-day').forEach(c => c.classList.remove('selected'));
+          cell.classList.add('selected');
+          document.getElementById('sessionsListTitle').textContent =
+            `Sessions on ${calendarDate.toLocaleDateString('en-US', { month: 'short' })} ${day}`;
+          renderSessionsList(sessionsByDay[day]);
+        });
+      }
+
+      grid.appendChild(cell);
+    }
   }
-}
 
-document.getElementById('calPrevBtn').addEventListener('click', function() {
-  calendarDate.setMonth(calendarDate.getMonth() - 1);
-  renderCalendar();
-});
+  document.getElementById('calPrevBtn').addEventListener('click', function() {
+    calendarDate.setMonth(calendarDate.getMonth() - 1);
+    renderCalendar();
+  });
 
-document.getElementById('calNextBtn').addEventListener('click', function() {
-  calendarDate.setMonth(calendarDate.getMonth() + 1);
-  document.getElementById('sessionsListTitle').textContent = 'All Sessions';
-  renderSessionsList(allClasses);
-});
+  document.getElementById('calNextBtn').addEventListener('click', function() {
+    calendarDate.setMonth(calendarDate.getMonth() + 1);
+    document.getElementById('sessionsListTitle').textContent = 'All Sessions';
+    renderSessionsList(allClasses);
+  });
 
   async function openSessionDetail(classCode, subject) {
     try {
@@ -792,6 +860,8 @@ document.getElementById('calNextBtn').addEventListener('click', function() {
   function renderDonut(feedbackList) {
     const canvas = document.getElementById('clarityDonut');
     if (!canvas) return;
+
+    canvas.style.visibility = 'visible';
 
     let confused = 0, partial = 0, clear = 0;
 

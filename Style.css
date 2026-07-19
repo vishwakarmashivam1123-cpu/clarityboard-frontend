@@ -738,3 +738,88 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+/* ---------- Page fade-in ---------- */
+body {
+  animation: fadeInPage 0.4s ease;
+}
+
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Button loading spinner ---------- */
+button.btn-loading {
+  color: transparent !important;
+  pointer-events: none;
+  position: relative;
+}
+
+button.btn-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.link-button.btn-loading::after {
+  border: 2.5px solid rgba(59, 107, 255, 0.25);
+  border-top-color: var(--clarity);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Skeleton loading ---------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--mist) 25%, #EEF1FB 37%, var(--mist) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 10px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 70%; }
+.skeleton-line.full { width: 100%; }
+
+.skeleton-block {
+  height: 52px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.skeleton-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-chart {
+  height: 180px;
+  border-radius: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
+  .skeleton, button.btn-loading::after { animation: none; }
+}
