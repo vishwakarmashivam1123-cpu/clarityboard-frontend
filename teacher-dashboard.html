@@ -21,66 +21,79 @@
   <a href="past-sessions.html" class="drawer-link">🕘 Past Sessions</a>
   <button class="drawer-link logout" id="drawerLogout">🚪 Logout</button>
 </div>
-    <div class="container Dashboard">
-        
-        <div class="page-banner">
-  <button class="menu-btn" id="menuBtn">☰</button>
-  <span class="page-banner-title">Dashboard</span>
-  <span class="page-banner-icon">📊</span>
-</div>
 
-        <p id="sessionInfo">Your Class Code: <span id="displayCode">Loading...</span></p>
+    <header class="site-header">
+      <span class="site-header-logo">ClarityBoard</span>
+      <span class="site-header-tagline">Anonymous feedback, made simple</span>
+    </header>
 
-        <!-- Create New Session -->
-        <div id="createSessionBox">
-  <h2>Start New Session</h2>
-  <input type="text" id="sessionSubject" placeholder="Subject (e.g. Data Structures)">
-  <input type="text" id="sessionTopics" placeholder="Topics, comma separated (e.g. Recursion, Linked Lists)">
-  <button id="createSessionBtn">Start Session</button>
-  <p id="createSessionError" class="error"></p>
-</div>
+    <div class="page-wrap">
+      <div class="container Dashboard">
+          
+          <div class="page-banner">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <span class="page-banner-title">Dashboard</span>
+    <span class="page-banner-icon">📊</span>
+  </div>
 
-        <div id="dashboardContent" class="hidden">
-            <button id="newSessionBtn" style="width:auto; background:#e63946; font-size:12px; padding:6px 12px;">End Session & Start New</button>
-            <a href="past-sessions.html" class="link-button">View Past Sessions</a>
+          <p id="sessionInfo">Your Class Code: <span id="displayCode">Loading...</span></p>
 
-            <div class="stat-cards">
-              <div class="stat-card">
-                <div class="stat-icon stat-icon-blue">📝</div>
-                <div class="stat-value" id="statResponses">0</div>
-                <div class="stat-label">Responses</div>
+          <!-- Create New Session -->
+          <div id="createSessionBox">
+    <h2>Start New Session</h2>
+    <input type="text" id="sessionSubject" placeholder="Subject (e.g. Data Structures)">
+    <input type="text" id="sessionTopics" placeholder="Topics, comma separated (e.g. Recursion, Linked Lists)">
+    <button id="createSessionBtn">Start Session</button>
+    <p id="createSessionError" class="error"></p>
+  </div>
+
+          <div id="dashboardContent" class="hidden">
+              <button id="newSessionBtn" style="width:auto; background:#e63946; font-size:12px; padding:6px 12px;">End Session & Start New</button>
+              <a href="past-sessions.html" class="link-button">View Past Sessions</a>
+
+              <div class="stat-cards">
+                <div class="stat-card">
+                  <div class="stat-icon stat-icon-blue">📝</div>
+                  <div class="stat-value" id="statResponses">0</div>
+                  <div class="stat-label">Responses</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon stat-icon-amber">⭐</div>
+                  <div class="stat-value" id="statAvgRating">0</div>
+                  <div class="stat-label">Avg Rating</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon stat-icon-coral">❓</div>
+                  <div class="stat-value" id="statOpenDoubts">0</div>
+                  <div class="stat-label">Open Doubts</div>
+                </div>
               </div>
-              <div class="stat-card">
-                <div class="stat-icon stat-icon-amber">⭐</div>
-                <div class="stat-value" id="statAvgRating">0</div>
-                <div class="stat-label">Avg Rating</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon stat-icon-coral">❓</div>
-                <div class="stat-value" id="statOpenDoubts">0</div>
-                <div class="stat-label">Open Doubts</div>
-              </div>
-            </div>
 
-            <h2>🔥 Confusion Heatmap</h2>
-            <div id="heatmap"></div>
-            <h2>🎯 Overall Clarity Breakdown</h2>
-<div class="donut-wrap">
-  <canvas id="clarityDonut"></canvas>
-  <div class="donut-legend" id="donutLegend"></div>
-</div>
+              <h2>🔥 Confusion Heatmap</h2>
+              <div id="heatmap"></div>
+              <h2>🎯 Overall Clarity Breakdown</h2>
+  <div class="donut-wrap">
+    <canvas id="clarityDonut"></canvas>
+    <div class="donut-legend" id="donutLegend"></div>
+  </div>
 
-            <h2>📈 Lecture Rating Trend</h2>
-            <canvas id="ratingChart"></canvas>
+              <h2>📈 Lecture Rating Trend</h2>
+              <canvas id="ratingChart"></canvas>
 
-            <h2>❓ Doubts</h2>
-            <div id="doubtsList"></div>
+              <h2>❓ Doubts</h2>
+              <div id="doubtsList"></div>
 
-            <h2>💡 Suggestions</h2>
-            <div id="suggestionsList"></div>
-        </div>
+              <h2>💡 Suggestions</h2>
+              <div id="suggestionsList"></div>
+          </div>
 
+      </div>
     </div>
+
+    <footer class="site-footer">
+      <p>Made with 💙 for better classrooms — ClarityBoard © 2026</p>
+    </footer>
+
     <script src="Script.js"></script>
     
 </body>

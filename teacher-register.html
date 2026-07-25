@@ -8,19 +8,31 @@
 
 </head>
 <body>
-    <div class="container">
-        <h1>Teacher Registration</h1>
+    <header class="site-header">
+      <span class="site-header-logo">ClarityBoard</span>
+      <span class="site-header-tagline">Anonymous feedback, made simple</span>
+    </header>
 
-        <input type="text" id="teachername" placeholder="Full Name" required> 
-        <input type="text" id="Subject" placeholder="Subject" required>
-        <input type="email" id="teacheremail" placeholder="Email" required>
-        <input type="password" id="teacherpassword" placeholder="Password" required>
-        
-        <button id="register-button">Register</button>
+    <div class="page-wrap">
+      <div class="container">
+          <h1>Teacher Registration</h1>
 
-        <p id="RegistrationError" class="error" style="color: red;"></p>
-        <p class="switch-link">Already have an account? <a href="teacher-login.html">Login here</a></p>
+          <input type="text" id="teachername" placeholder="Full Name" required> 
+          <input type="text" id="Subject" placeholder="Subject" required>
+          <input type="email" id="teacheremail" placeholder="Email" required>
+          <input type="password" id="teacherpassword" placeholder="Password" required>
+          
+          <button id="register-button">Register</button>
+
+          <p id="RegistrationError" class="error" style="color: red;"></p>
+          <p class="switch-link">Already have an account? <a href="teacher-login.html">Login here</a></p>
+      </div>
     </div>
+
+    <footer class="site-footer">
+      <p>Made with 💙 for better classrooms — ClarityBoard © 2026</p>
+    </footer>
+
     <script src="Script.js"></script>
 </body>
 </html>

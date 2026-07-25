@@ -7,38 +7,50 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Student Login Content This part indicate how student part display -->
-     <div class="container">
-        <div id="codestage">
-            <h1>Enter Subject Code</h1>
-            <input type="text" id="SubjectCode" placeholder="e.g. 482913" maxlength="6">
-            <button id="joinButton">Join Class</button>
-            <p id="code-error" class="error" style="color: red;"></p>
-        </div>
-        <!--Feedback Section-->
-        <div id="feedbackStage" class="hidden">
-            <h1>Today's Topic</h1>
-            <div id="topiclist"></div>
-            
-            <h2>Overall Doubts</h2>
-            <textarea id="overall-doubts" placeholder="Enter your doubts here..." ></textarea>
-            
-            <h2>Rate Lecture(1-5)</h2>
-            <div id="starRating"></div>
-            
-            <h2>Suggestions</h2>
-            <textarea id="suggestions" placeholder="Enter your suggestions here..." ></textarea>
+    <header class="site-header">
+      <span class="site-header-logo">ClarityBoard</span>
+      <span class="site-header-tagline">Anonymous feedback, made simple</span>
+    </header>
 
-            <p id="submit-error" class="error"></p>
-            <button id="submitfeedback">Submit Feedback</button>
-        </div>
+    <div class="page-wrap">
+      <!-- Student Login Content This part indicate how student part display -->
+       <div class="container">
+          <div id="codestage">
+              <h1>Enter Subject Code</h1>
+              <input type="text" id="SubjectCode" placeholder="e.g. 482913" maxlength="6">
+              <button id="joinButton">Join Class</button>
+              <p id="code-error" class="error" style="color: red;"></p>
+          </div>
+          <!--Feedback Section-->
+          <div id="feedbackStage" class="hidden">
+              <h1>Today's Topic</h1>
+              <div id="topiclist"></div>
+              
+              <h2>Overall Doubts</h2>
+              <textarea id="overall-doubts" placeholder="Enter your doubts here..." ></textarea>
+              
+              <h2>Rate Lecture(1-5)</h2>
+              <div id="starRating"></div>
+              
+              <h2>Suggestions</h2>
+              <textarea id="suggestions" placeholder="Enter your suggestions here..." ></textarea>
 
-        <!--Thank You Message (hidden at first)-->
-        <div id="thankYouStage" class="hidden">
-            <h1>Thank You for Your Feedback!</h1>
-            <p>We appreciate your input and will use it to improve future lectures.</p>
-        </div>
+              <p id="submit-error" class="error"></p>
+              <button id="submitfeedback">Submit Feedback</button>
+          </div>
+
+          <!--Thank You Message (hidden at first)-->
+          <div id="thankYouStage" class="hidden">
+              <h1>Thank You for Your Feedback!</h1>
+              <p>We appreciate your input and will use it to improve future lectures.</p>
+          </div>
+      </div>
     </div>
+
+    <footer class="site-footer">
+      <p>Made with 💙 for better classrooms — ClarityBoard © 2026</p>
+    </footer>
+
     <script src="Script.js"></script>
 </body>
 </html>

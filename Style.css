@@ -823,3 +823,73 @@ button.btn-loading::after {
   body { animation: none; }
   .skeleton, button.btn-loading::after { animation: none; }
 }
+/* ---------- Global Header ---------- */
+.site-header {
+  width: 100%;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.site-header-logo {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 17px;
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.site-header-tagline {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  border-left: 1px solid var(--mist);
+  padding-left: 8px;
+  margin-left: 2px;
+}
+
+/* ---------- Global Footer ---------- */
+.site-footer {
+  width: 100%;
+  padding: 16px 24px 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.site-footer a {
+  color: var(--clarity);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Page wrapper to hold header/content/footer ---------- */
+body {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.page-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  width: 100%;
+}

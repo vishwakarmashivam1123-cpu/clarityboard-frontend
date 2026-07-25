@@ -21,51 +21,64 @@
   <a href="past-sessions.html" class="drawer-link">🕘 Past Sessions</a>
   <button class="drawer-link logout" id="drawerLogout">🚪 Logout</button>
 </div>
-    <div class="container Dashboard">
-        <div class="page-banner">
-  <button class="menu-btn" id="menuBtn">☰</button>
-  <span class="page-banner-title">Past Sessions</span>
-  <span class="page-banner-icon">🕘</span>
-</div>
-        <a href="teacher-dashboard.html" class="link-button">← Back to Dashboard</a>
 
-        <div class="calendar-card">
-  <div class="calendar-header">
-    <button class="cal-nav-btn" id="calPrevBtn">‹</button>
-    <span class="calendar-title" id="calMonthLabel"></span>
-    <button class="cal-nav-btn" id="calNextBtn">›</button>
+    <header class="site-header">
+      <span class="site-header-logo">ClarityBoard</span>
+      <span class="site-header-tagline">Anonymous feedback, made simple</span>
+    </header>
+
+    <div class="page-wrap">
+      <div class="container Dashboard">
+          <div class="page-banner">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <span class="page-banner-title">Past Sessions</span>
+    <span class="page-banner-icon">🕘</span>
   </div>
-  <div class="calendar-weekdays">
-    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-  </div>
-  <div class="calendar-grid" id="calendarGrid"></div>
-</div>
+          <a href="teacher-dashboard.html" class="link-button">← Back to Dashboard</a>
 
-<h2 id="sessionsListTitle">All Sessions</h2>
-<div id="sessionsList"></div>
-
-        <!-- Reused dashboard view for whichever session is clicked -->
-        <div id="pastSessionDetail" class="hidden">
-            <h2 id="pastSessionTitle"></h2>
-            <h2>🎯 Overall Clarity Breakdown</h2>
-<div class="donut-wrap">
-  <canvas id="clarityDonut"></canvas>
-  <div class="donut-legend" id="donutLegend"></div>
-</div>
-
-            <h2>🔥 Confusion Heatmap</h2>
-            <div id="heatmap"></div>
-
-            <h2>📈 Lecture Rating Trend</h2>
-            <canvas id="ratingChart"></canvas>
-
-            <h2>❓ Doubts</h2>
-            <div id="doubtsList"></div>
-
-            <h2>💡 Suggestions</h2>
-            <div id="suggestionsList"></div>
-        </div>
+          <div class="calendar-card">
+    <div class="calendar-header">
+      <button class="cal-nav-btn" id="calPrevBtn">‹</button>
+      <span class="calendar-title" id="calMonthLabel"></span>
+      <button class="cal-nav-btn" id="calNextBtn">›</button>
     </div>
+    <div class="calendar-weekdays">
+      <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <h2 id="sessionsListTitle">All Sessions</h2>
+  <div id="sessionsList"></div>
+
+          <!-- Reused dashboard view for whichever session is clicked -->
+          <div id="pastSessionDetail" class="hidden">
+              <h2 id="pastSessionTitle"></h2>
+              <h2>🎯 Overall Clarity Breakdown</h2>
+  <div class="donut-wrap">
+    <canvas id="clarityDonut"></canvas>
+    <div class="donut-legend" id="donutLegend"></div>
+  </div>
+
+              <h2>🔥 Confusion Heatmap</h2>
+              <div id="heatmap"></div>
+
+              <h2>📈 Lecture Rating Trend</h2>
+              <canvas id="ratingChart"></canvas>
+
+              <h2>❓ Doubts</h2>
+              <div id="doubtsList"></div>
+
+              <h2>💡 Suggestions</h2>
+              <div id="suggestionsList"></div>
+          </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Made with 💙 for better classrooms — ClarityBoard © 2026</p>
+    </footer>
+
     <script src="Script.js"></script>
 </body>
 </html>
