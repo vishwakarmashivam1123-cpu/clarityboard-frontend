@@ -975,3 +975,21 @@ if (sessionsListDiv) {
     });
   }
 }
+// ---------- APP LOADER / SPLASH ----------
+window.addEventListener('load', function() {
+  const minDelay = 700; // minimum time the splash stays visible, in ms
+  const startTime = performance.now();
+
+  function hideLoader() {
+    const elapsed = performance.now() - startTime;
+    const remaining = Math.max(0, minDelay - elapsed);
+
+    setTimeout(function() {
+      const loader = document.getElementById('appLoader');
+      if (loader) loader.classList.add('fade-out');
+      document.body.classList.remove('loading');
+    }, remaining);
+  }
+
+  hideLoader();
+});
