@@ -1,5 +1,49 @@
 const API_URL = "https://clarityboard-backend.onrender.com";
 
+// ---------- TEACHER LOGIN PERSISTENCE ----------
+// localStorage alone isn't reliable on some phones (MIUI etc. can wipe WebView
+// storage on an aggressive app-kill), so we mirror the login data into native
+// SharedPreferences via AndroidBridge as a durable backup, and self-heal
+// localStorage from it if it's ever found empty.
+function getTeacherData() {
+  let raw = localStorage.getItem('teacher');
+  if (!raw && window.AndroidBridge && typeof window.AndroidBridge.getTeacherData === 'function') {
+    try {
+      const nativeData = window.AndroidBridge.getTeacherData();
+      if (nativeData) {
+        localStorage.setItem('teacher', nativeData);
+        raw = nativeData;
+      }
+    } catch (bridgeErr) {
+      console.error('Native teacher data read failed:', bridgeErr);
+    }
+  }
+  return raw ? JSON.parse(raw) : null;
+}
+
+function saveTeacherData(teacher) {
+  const json = JSON.stringify(teacher);
+  localStorage.setItem('teacher', json);
+  if (window.AndroidBridge && typeof window.AndroidBridge.saveTeacherData === 'function') {
+    try {
+      window.AndroidBridge.saveTeacherData(json);
+    } catch (bridgeErr) {
+      console.error('Native teacher data save failed:', bridgeErr);
+    }
+  }
+}
+
+function clearTeacherData() {
+  localStorage.removeItem('teacher');
+  if (window.AndroidBridge && typeof window.AndroidBridge.clearTeacherData === 'function') {
+    try {
+      window.AndroidBridge.clearTeacherData();
+    } catch (bridgeErr) {
+      console.error('Native teacher data clear failed:', bridgeErr);
+    }
+  }
+}
+
 const studentButton = document.getElementById('student-button');
 const teacherButton = document.getElementById('teacher-button');
 
@@ -19,7 +63,7 @@ function setButtonLoading(button, isLoading) {
 }
 
 if (drawer && menuBtn) {
-  const teacherData = JSON.parse(localStorage.getItem('teacher'));
+  const teacherData = getTeacherData();
 
   if (teacherData) {
     document.getElementById('drawerName').textContent = teacherData.name;
@@ -41,7 +85,7 @@ if (drawer && menuBtn) {
   const drawerLogout = document.getElementById('drawerLogout');
   if (drawerLogout) {
     drawerLogout.addEventListener('click', function() {
-      localStorage.removeItem('teacher');
+      clearTeacherData();
       localStorage.removeItem('currentClassCode');
       localStorage.removeItem('currentLectureId');
       window.location.href = 'teacher-login.html';
@@ -140,7 +184,7 @@ if (loginButton) {
         return;
       }
 
-      localStorage.setItem('teacher', JSON.stringify(data.teacher));
+      saveTeacherData(data.teacher);
 
       // Agar Android app ke andar chal rahe hain, FCM token backend ko bhejo
       if (window.AndroidBridge && typeof window.AndroidBridge.getFcmToken === 'function') {
@@ -333,7 +377,7 @@ const createSessionBtn = document.getElementById('createSessionBtn');
 
 if (createSessionBtn) {
   const dashboardContent = document.getElementById('dashboardContent');
-  const teacherData = JSON.parse(localStorage.getItem('teacher'));
+  const teacherData = getTeacherData();
 
   if (!teacherData) {
     window.location.href = 'teacher-login.html';
@@ -673,9 +717,7 @@ if (createSessionBtn) {
           tension: 0.3
         }]
       },
-      options: {
-        scales: { y: { min: 0, max: 5 } }
-      }
+      options: { scales: { y: { min: 0, max: 5 } } }
     });
   }
 }
@@ -684,7 +726,7 @@ if (createSessionBtn) {
 const sessionsListDiv = document.getElementById('sessionsList');
 
 if (sessionsListDiv) {
-  const teacherData = JSON.parse(localStorage.getItem('teacher'));
+  const teacherData = getTeacherData();
 
   if (!teacherData) {
     window.location.href = 'teacher-login.html';
@@ -798,21 +840,19 @@ if (sessionsListDiv) {
           renderSessionsList(sessionsByDay[day]);
         });
       }
-
-      grid.appendChild(cell);
     }
+
+    document.getElementById('calPrevBtn').addEventListener('click', function() {
+      calendarDate.setMonth(calendarDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    document.getElementById('calNextBtn').addEventListener('click', function() {
+      calendarDate.setMonth(calendarDate.getMonth() + 1);
+      document.getElementById('sessionsListTitle').textContent = 'All Sessions';
+      renderSessionsList(allClasses);
+    });
   }
-
-  document.getElementById('calPrevBtn').addEventListener('click', function() {
-    calendarDate.setMonth(calendarDate.getMonth() - 1);
-    renderCalendar();
-  });
-
-  document.getElementById('calNextBtn').addEventListener('click', function() {
-    calendarDate.setMonth(calendarDate.getMonth() + 1);
-    document.getElementById('sessionsListTitle').textContent = 'All Sessions';
-    renderSessionsList(allClasses);
-  });
 
   async function openSessionDetail(classCode, subject) {
     try {
