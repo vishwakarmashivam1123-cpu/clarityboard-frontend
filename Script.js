@@ -141,6 +141,23 @@ if (loginButton) {
       }
 
       localStorage.setItem('teacher', JSON.stringify(data.teacher));
+
+      // Agar Android app ke andar chal rahe hain, FCM token backend ko bhejo
+      if (window.AndroidBridge && typeof window.AndroidBridge.getFcmToken === 'function') {
+        try {
+          const fcmToken = window.AndroidBridge.getFcmToken();
+          if (fcmToken) {
+            await fetch(`${API_URL}/api/teachers/save-fcm-token`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, fcmToken })
+            });
+          }
+        } catch (bridgeErr) {
+          console.error('FCM token save failed:', bridgeErr);
+        }
+      }
+
       window.location.href = 'teacher-dashboard.html';
 
     } catch (err) {
@@ -150,7 +167,6 @@ if (loginButton) {
     }
   });
 }
-
 // -----STUDENT FLOW LOGIC------
 const codestage = document.getElementById('codestage');
 const feedbackstage = document.getElementById('feedbackStage');
